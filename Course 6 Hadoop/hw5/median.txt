@@ -1,0 +1,1 @@
+The median of trip duration is 8 min	
