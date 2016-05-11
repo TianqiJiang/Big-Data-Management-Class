@@ -3,9 +3,6 @@
 Labs and assignments of Big Data class in CUSP NYU 2016 spring semester.
 
 
-
-Outline:
-
 Course 1: Introduction
 
 Course 2: Big data analytics lifecycle
