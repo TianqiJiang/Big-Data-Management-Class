@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import pyspark
+import heapq
 
 def indexZones(shapeFilename):
     import rtree
@@ -53,12 +54,13 @@ if __name__=='__main__':
 
     trips = sc.textFile(','.join(sys.argv[1:-1]))
 
+    def reducer(top1, top2):
+        return heapq.nlargest(3, top1+top2, lambda pair: pair[1])
+
     output = trips \
         .mapPartitions(mapToZone) \
-        .reduceByKey(lambda a, b: (a+b))\
-        .sortBy(lambda x: -x[1]) \
-        .map(lambda x: x[0]) \
-        .reduceByKey(lambda a, b: (a+','+b)) \
-        .mapValues(lambda x: x.split(",")[:3]) \
+        .reduceByKey(lambda a, b: (a+b)) \
+        .map(lambda a: (a[0][0], [(a[0][1], a[1])])) \
+        .reduceByKey(reducer)
     
     output.saveAsTextFile(sys.argv[-1])
